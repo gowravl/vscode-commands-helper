@@ -1,6 +1,7 @@
 {
   "name": "vscode-helper",
-  "displayName": "VSCode Helper",
+  "displayName": "Commands Helper",
+  "publisher": "gowravl",
   "description": "Helper Extension for VSCode",
   "version": "0.0.1",
   "engines": {
