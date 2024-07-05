@@ -1,10 +1,10 @@
 {
-  "name": "vscode-commands-helper",
+  "name": "vscode-helper",
   "displayName": "Commands Helper",
   "icon": "resources/icon.png",
   "publisher": "gowravl",
   "description": "Commands Helper Extension for VSCode",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.90.0"
   },
