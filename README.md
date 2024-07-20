@@ -1,18 +1,32 @@
 # Commands Helper
 
-Commands Helper is a Visual Studio Code extension designed to streamline the development workflow by providing an easy way to manage and execute custom tasks directly from the VSCode interface.
+Commands Helper is a Visual Studio Code extension designed to streamline the development workflow by providing an easy way to manage and execute custom command line tasks directly from the VSCode interface.
 
 ## Features
 
 - **Task Management**: Organize tasks into collapsible sections for better organization.
 - **Custom Commands**: Run terminal commands with a single click.
-- **Configurable**: Easily add or modify tasks through the workspace settings.
+- **Configurable**: Easily add or modify tasks through the VSCode settings.
 
-## Usage
+## Installation and Setup
 
-### Adding Tasks
+### Installation
 
-To add tasks, modify the `settings.json` file in .vscode folder inside your workspace. Here is an example configuration:
+Open VSCode Extensions and search for `gowravl.vscode-helper` and click on Install
+
+### Setup and Adding Tasks
+
+- Select the Commands Helper extension in Activity Bar
+- Click on the `Open Settings` Button
+- Click on `Edit in settings.json`
+- Add configuration as described below
+
+or
+
+- Open VSCode Settings by (`Ctrl + ,`) or (`Cmd + ,`)
+- Search for `commandsHelper.tasks`
+- Click on `Edit in settings.json`
+- Add configuration as described below
 
 ## Example Interface
 
@@ -24,7 +38,7 @@ Note: **iconId** supports VSCode Product Icons only. You can find the list of Ic
 {
   // ... Other Configurations
 
-  "vscodeHelper.tasks": [
+  "commandsHelper.tasks": [
     {
       "section": "Basic Tasks",
       "tasks": [
@@ -113,4 +127,8 @@ Note: **iconId** supports VSCode Product Icons only. You can find the list of Ic
 - **command**: The terminal command to be executed when the task is run.
 - **iconId**: The icon displayed alongside the task label in VSCode.
 
-<a href="https://www.flaticon.com/free-icons/gear" title="gear icons">Gear icons created by Eucalyp - Flaticon</a>
+## Acknowledgments
+
+- Thanks to the authors of [vscode-action-buttons](https://github.com/seunlanlege/vscode-action-buttons/) library for inspiration.
+
+- <a href="https://www.flaticon.com/free-icons/gear" title="gear icons">Gear icons created by Eucalyp - Flaticon</a>

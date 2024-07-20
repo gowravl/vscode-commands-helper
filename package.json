@@ -4,7 +4,7 @@
   "icon": "resources/icon.png",
   "publisher": "gowravl",
   "description": "Commands Helper Extension for VSCode",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -22,16 +22,24 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "vscodeHelper",
+          "id": "commandsHelper",
           "title": "Commands Helper",
           "icon": "$(tools)"
         }
       ]
     },
     "views": {
-      "vscodeHelper": [
+      "commandsHelper": [
         {
-          "id": "vscodeHelperView",
+          "id": "commandsHelper.tree",
+          "type": "tree",
+          "when": "commandsHelper.hasTasks",
+          "name": ""
+        },
+        {
+          "id": "commandsHelper.webview",
+          "type": "webview",
+          "when": "!commandsHelper.hasTasks",
           "name": ""
         }
       ]
@@ -40,7 +48,7 @@
       "type": "object",
       "title": "VSCode Commands Helper Configuration",
       "properties": {
-        "vscodeHelper.tasks": {
+        "commandsHelper.tasks": {
           "type": "array",
           "description": "List of Sections and Tasks to display",
           "items": {
