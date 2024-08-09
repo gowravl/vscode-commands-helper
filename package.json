@@ -4,7 +4,7 @@
   "icon": "resources/icon.png",
   "publisher": "gowravl",
   "description": "Commands Helper Extension for VSCode",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -48,6 +48,11 @@
       "type": "object",
       "title": "VSCode Commands Helper Configuration",
       "properties": {
+        "commandsHelper.loadNpmCommands": {
+          "type": "boolean",
+          "default": false,
+          "description": "Load Scripts in package.json as a New Section"
+        },
         "commandsHelper.tasks": {
           "type": "array",
           "description": "List of Sections and Tasks to display",
@@ -114,5 +119,6 @@
   },
   "dependencies": {
     "@vscode/vsce": "^2.29.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22"
 }

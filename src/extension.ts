@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
 
 export function activate(context: vscode.ExtensionContext) {
   const { tasks } = getTasksFromConfiguration();
@@ -57,7 +59,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   // Watch for configuration changes and refresh the view
   vscode.workspace.onDidChangeConfiguration((e) => {
-    if (e.affectsConfiguration("commandsHelper.tasks")) {
+    if (
+      e.affectsConfiguration("commandsHelper.tasks") ||
+      e.affectsConfiguration("commandsHelper.loadNpmCommands")
+    ) {
       const { tasks: newTasks, errorMessage } = getTasksFromConfiguration();
       taskProvider.refresh(newTasks);
       if (webviewView) {
@@ -77,49 +82,59 @@ function getTasksFromConfiguration(): {
   errorMessage?: string;
 } {
   const configuration = vscode.workspace.getConfiguration("commandsHelper");
+  let tasks: TaskSection[] = [];
+  let errorMessage: string | undefined;
 
   try {
     const tasksConfig = configuration.get<TaskSection[]>("tasks");
-    if (!Array.isArray(tasksConfig)) {
-      return {
-        tasks: [],
-        errorMessage:
-          "Invalid configuration format. Expected an array of task sections.",
-      };
+    const npmCommands = configuration.get<boolean>("loadNpmCommands");
+
+    if (tasksConfig && Array.isArray(tasksConfig)) {
+      tasks = tasksConfig.map((section) => {
+        if (
+          typeof section !== "object" ||
+          typeof section.section !== "string" ||
+          !Array.isArray(section.tasks)
+        ) {
+          throw new Error(
+            "Configuration section is missing or tasks array is invalid."
+          );
+        }
+        section.tasks.forEach((task) => {
+          if (
+            typeof task !== "object" ||
+            typeof task.label !== "string" ||
+            typeof task.command !== "string"
+          ) {
+            throw new Error("Tasks are missing required fields.");
+          }
+        });
+        return section;
+      });
+    } else {
+      errorMessage =
+        "Invalid configuration format. Expected an array of task sections.";
     }
 
-    const tasks: TaskSection[] = tasksConfig.map((section) => {
-      if (
-        typeof section !== "object" ||
-        typeof section.section !== "string" ||
-        !Array.isArray(section.tasks)
-      ) {
-        throw new Error(
-          "Configuration section is missing or tasks array is invalid."
-        );
+    if (npmCommands) {
+      const npmScripts = getNpmScripts();
+      if (npmScripts.length > 0) {
+        tasks.push({
+          section: "NPM Scripts",
+          tasks: npmScripts,
+        });
+      } else {
+        errorMessage = "No npm scripts found in package.json.";
       }
-      section.tasks.forEach((task) => {
-        if (
-          typeof task !== "object" ||
-          typeof task.label !== "string" ||
-          typeof task.command !== "string"
-        ) {
-          throw new Error("Tasks are missing required fields.");
-        }
-      });
-      return section;
-    });
-
-    return { tasks };
+    }
   } catch (error) {
-    return {
-      tasks: [],
-      errorMessage:
-        error instanceof Error
-          ? error.message
-          : "An unknown error occurred while loading configuration.",
-    };
+    errorMessage =
+      error instanceof Error
+        ? error.message
+        : "An unknown error occurred while loading configuration.";
   }
+
+  return { tasks, errorMessage };
 }
 
 class TaskProvider implements vscode.TreeDataProvider<TaskItem> {
@@ -250,6 +265,43 @@ function getWebviewContent(errorMessage: string = ""): string {
     </script>
   </body>
   </html>`;
+}
+
+function getPackageManager(): "yarn" | "npm" {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+
+  if (workspaceFolders) {
+    const rootPath = workspaceFolders[0].uri.fsPath;
+    const yarnLockPath = path.join(rootPath, "yarn.lock");
+    if (fs.existsSync(yarnLockPath)) {
+      return "yarn";
+    }
+  }
+  return "npm";
+}
+
+function getNpmScripts(): Task[] {
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  const packageManager = getPackageManager();
+
+  if (workspaceFolders) {
+    const packageJsonPath = path.join(
+      workspaceFolders[0].uri.fsPath,
+      "package.json"
+    );
+    if (fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+      if (packageJson.scripts && typeof packageJson.scripts === "object") {
+        return Object.keys(packageJson.scripts).map((script) => ({
+          label: script,
+          command: `${packageManager} run ${script}`,
+          iconId: "terminal",
+        }));
+      }
+    }
+  }
+
+  return [];
 }
 
 export function deactivate() {}

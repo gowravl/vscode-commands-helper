@@ -1,10 +1,11 @@
 # Commands Helper
 
-Commands Helper is a Visual Studio Code extension designed to streamline the development workflow by providing an easy way to manage and execute custom command line tasks directly from the VSCode interface.
+Commands Helper is a Visual Studio Code extension designed to streamline the development workflow by providing an easy way to manage and execute npm/yarn scripts within your projects and custom command line tasks directly from the VSCode interface.
 
 ## Features
 
 - **Task Management**: Organize tasks into collapsible sections for better organization.
+- **NPM Script Integration**: Automatically detects npm or yarn scripts from package.json and adds them to the task list if enabled.
 - **Custom Commands**: Run terminal commands with a single click.
 - **Configurable**: Easily add or modify tasks through the VSCode settings.
 
@@ -37,7 +38,7 @@ Note: **iconId** supports VSCode Product Icons only. You can find the list of Ic
 ```json
 {
   // ... Other Configurations
-
+  "commandsHelper.loadNpmCommands": true,
   "commandsHelper.tasks": [
     {
       "section": "Basic Tasks",
@@ -120,7 +121,8 @@ Note: **iconId** supports VSCode Product Icons only. You can find the list of Ic
 }
 ```
 
-- **vscodeHelper.tasks**: Root key containing an array of task sections.
+- **commandsHelper.loadNpmCommands**: Root key as a boolean which loads npm/yarn scripts in package.json of Project as a Section.
+- **commandsHelper.tasks**: Root key containing an array of task sections.
 - **section**: Defines a collapsible section name grouping related tasks.
 - **tasks**: Array of task objects within a section.
 - **label**: The name of the task as it will appear in VSCode.
